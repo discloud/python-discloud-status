@@ -14,7 +14,7 @@ As informações fornecidas pelo modulo são geradas pelo [cgroup](https://www.k
 ## Instalação
 
 ```
-pip install discloud-status
+pip install discloud
 ```
 
 ## Forma de uso Python 3.6+
