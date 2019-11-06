@@ -5,7 +5,7 @@ with open('README.md', 'r') as fp:
     long_desc = fp.read()
 
 
-setup(name='discloud-status',
+setup(name='discloud',
       version='0.1.0',
       license='MIT',
       description='Esse módulo Python funciona apenas no Linux, e foi criado exclusivamente para atender os usuários da discloudbot.com',
@@ -13,7 +13,7 @@ setup(name='discloud-status',
       long_description_content_type="text/markdown",
       author='Algueem',
       url='https://github.com/discloud/python-discloud-status',
-      keywords=['discloud', 'discloud-status'],
+      keywords=['discloud'],
       packages=find_packages(),
       classifiers=[
           "Development Status :: 5 - Production/Stable",
