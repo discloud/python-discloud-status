@@ -1,6 +1,7 @@
 from __future__ import annotations
 import enum
-from .client import UserClient
+
+from .utils import TimePeriod, FutureDate
 
 
 PT_TRANSLATIONS = {
@@ -23,14 +24,22 @@ class PlanType(enum.Enum):
 
 
 class Plan:
-    def __init__(self, client: UserClient, data: dict) -> None:
-        self.client = client
+    def __init__(self, data: dict) -> None:
         self.type: PlanType = PlanType[data['plan']]
-        self.expires_in = ...  # todo
-        self.expire_date = ...  # todo
+        self.lifetime = data.get('planDataEnd') == "Lifetime"
+        self.language: str = data['lang']
+        if self.lifetime:
+            self.expires_in = "never"
+            if self.language == "pt":
+                self.expires_in = "nunca"
+            self.expire_date = None
+
+        else:
+            self.expire_date: FutureDate = FutureDate.from_dict(data['lastDataLeft'])
+            self.expires_in: TimePeriod = TimePeriod(data)
 
     def __str__(self) -> str:  # todo
-        if self.client.language == "pt":
+        if self.language == "pt":
             return PT_TRANSLATIONS.get(self.type.name, self.type.name)
         return self.type.name
 
@@ -39,8 +48,7 @@ class Plan:
 
 
 class DisCloudUser:
-    def __init__(self, client, data: dict) -> None:
-        self.client = client
+    def __init__(self, data: dict) -> None:
         self.id = int(data['userID'])
-        self.plan = Plan(client, data['plan'])
+        self.plan = Plan(data)
 
