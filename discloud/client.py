@@ -1,21 +1,33 @@
-from .manager import RequestManager, Route
-from .utils import MISSING, InvalidArgument
-from .discloud import DisCloudUser
+from .http import RequestManager
+from .utils import MISSING
+from .errors import InvalidArgument
+from .discloud import User, Bot, File, Action, Logs
 
 
-class UserClient:
+class Client:
     def __init__(self, api_token: str, language: str = MISSING) -> None:
         self.api_token = api_token
         if language not in ["en", "pt"]:
             raise InvalidArgument("Input a valid value")  # todo: change error
-        self.language = "en" if language is MISSING else language
-        self.__requester = RequestManager(api_token)
+        self.language: str = "en" if language is MISSING else language
+        self.__requester = RequestManager(self)
 
-    async def fetch_user_info(self) -> DisCloudUser:
-        data = await self.__requester.fetch_user()
-        data['lang'] = self.language
-        # print(data) debugging purposes
-        return DisCloudUser(data)
+    async def fetch_user_info(self) -> User:
+        data: dict = await self.__requester.fetch_user()
+        return User(self, data)
 
-    async def fetch_bot(self, bot_id: int):  # todo: typehint
-        ...
+    async def fetch_bot(self, bot_id: int) -> Bot:
+        data: dict = await self.__requester.fetch_bot(bot_id)
+        return Bot(self, data)
+
+    async def restart_bot(self, bot_id: int) -> Action:
+        response: Action = await self.__requester.restart(bot_id)
+        return response
+
+    async def fetch_logs(self, bot_id: int) -> Logs:
+        data: dict = await self.__requester.fetch_logs(bot_id)
+        return Logs(data)
+
+    async def commit(self, bot_id: int, file: File, restart: bool = False) -> Action:
+        response: Action = await self.__requester.commit(bot_id, file, restart=restart)
+        return response
