@@ -2,6 +2,12 @@
 ```
 pip install discloud
 ```
+## Dev installing
+Note: need https://git-scm.com to download
+```
+pip install git+https://github.com/discloud/python-discloud-status@dev
+```
+
 ## Usage
 ### Create client instance
 ```python
