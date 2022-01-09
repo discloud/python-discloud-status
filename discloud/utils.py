@@ -1,6 +1,17 @@
 from __future__ import annotations
 import datetime
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .client import Client
+
+__all__ = ("MISSING",
+           "TimePeriod",
+           "FutureDate",
+           "date_now",
+           "MemoryInfo")
+
 
 class Missing:
     def __eq__(self, other):
@@ -13,14 +24,6 @@ class Missing:
         return "..."
 
 
-class DisCloudException(Exception):
-    pass
-
-
-class InvalidArgument(DisCloudException):
-    pass
-
-
 MISSING = Missing()
 
 
@@ -29,14 +32,25 @@ def date_now() -> datetime.datetime:
 
 
 class TimePeriod:
-    def __init__(self, data: dict) -> None:
-        self.language: str = data['lang']
+    __slots__ = (
+        "days",
+        "hours",
+        "minutes",
+        "seconds",
+        "_left",
+        "_client",
+        "_language"
+    )
+
+    def __init__(self, client: Client, data: dict) -> None:
+        self._client = client
+        self._language: str = client.language
         left: dict = data['lastDataLeft']
-        self.left = left
-        self.days: int = left.get('days')
-        self.hours: int = left.get('hours')
-        self.minutes: int = left.get('minutes')
-        self.seconds: int = left.get('seconds')
+        self._left = left
+        self.days: int | None = left.get('days', 0)
+        self.hours: int | None = left.get('hours', 0)
+        self.minutes: int | None = left.get('minutes', 0)
+        self.seconds: int | None = left.get('seconds', 0)
 
     def __str__(self) -> str:
         return self.format_string()
@@ -44,11 +58,51 @@ class TimePeriod:
     def __repr__(self) -> str:
         return "<TimePeriod days=%s hours=%s minutes=%s seconds=%s>"
 
-    def format_string(self):
-        data = self.left
-        if self.language == "pt":
-            return "{days} dias, {hours} horas, {minutes} minutos e {seconds} segundos".format(**data)
-        return "{days} days, {hours} hours, {minutes} minutes and {seconds} seconds".format(**data)
+    def total_seconds(self) -> int:
+        return self.days * 86400 + self.hours * 3600 + self.minutes * 60 + self.seconds
+
+    @staticmethod
+    def _converter_pt(secs: int) -> str:
+        info = {
+            "dia": 86400,
+            "hora": 3600,
+            "minuto": 60,
+            "segundo": 1
+        }
+        result = []
+        for unit, deli in info.items():
+            if secs >= deli:
+                amt, secs = divmod(secs, deli)
+                add_s = "s" if amt > 1 else ""
+                result.append(f"{amt} {unit}{add_s}")
+        return ', '.join(result)
+
+    @staticmethod
+    def _converter_en(secs: int) -> str:
+        info = {
+            "day": 86400,
+            "hour": 3600,
+            "minute": 60,
+            "second": 1
+        }
+        result = []
+        for unit, deli in info.items():
+            if secs >= deli:
+                amt, secs = divmod(secs, deli)
+                add_s = "s" if amt > 1 else ""
+                result.append(f"{amt} {unit}{add_s}")
+        return ', '.join(result)
+
+    def format_string(self) -> str:
+        left: int = self.total_seconds()
+        conv = self._converter_en if self._client.language == "en" else self._converter_pt
+        return conv(left)
+
+    @classmethod
+    def from_text(cls, client: Client, text: str) -> TimePeriod:
+        amt, unit = text.split()
+        amt = 1 if amt == "a" else amt
+        return cls(client, {"lastDataLeft": {unit: int(amt)}})
 
 
 class FutureDate:
@@ -77,3 +131,23 @@ class FutureDate:
     def to_tz(self, tz: datetime.tzinfo = None) -> FutureDate:
         self.date.replace(tzinfo=self.tz).astimezone(tz)
         return self
+
+
+class StatInfo:  # possible future stats add
+    ...
+
+
+class MemoryInfo(StatInfo):
+    def __init__(self, info: str) -> None:
+        self._info = info
+
+    def __str__(self) -> str:
+        return self._info
+
+    @property
+    def using(self):
+        return self._info.split("/")[0]
+
+    @property
+    def available(self):
+        return self._info.split("/")[1]
