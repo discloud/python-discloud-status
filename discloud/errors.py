@@ -1,5 +1,5 @@
 PT_ERRORS = {
-    "Invalid token": "Token inválido",
+    "Invalid token": "Token da API inválido",
     "Something went wrong, try again later": "Algo deu errado tente de novo mais tarde",
     "File not found": "Arquivo não encontrado",
     "You don't have this bot": "Você não possui este bot"
