@@ -100,8 +100,13 @@ class TimePeriod:
 
     @classmethod
     def from_text(cls, client: Client, text: str) -> TimePeriod:
-        amt, unit = text.split()
-        amt = 1 if amt == "a" else amt
+        if "about" in text:  # about an hour/about a minute
+            unit = text.split()[2]
+            amt = 1
+        else:  # everything else: x days, x hours, x minutes
+            amt, unit = text.split()
+            amt = 1 if not amt.isdigit() else amt
+        unit = unit+"s" if not unit.endswith("s") else unit
         return cls(client, {"lastDataLeft": {unit: int(amt)}})
 
 
