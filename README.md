@@ -17,7 +17,7 @@ discloud_client = discloud.Client("Token")
 
 ### Fetch user info
 ```python
-user = discloud_client.fetch_user_info()
+user = await discloud_client.fetch_user_info()
 print(f"ID: '{user.id}'")
 plan = user.plan
 print(f"Plan '{plan}'")
