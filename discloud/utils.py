@@ -100,7 +100,7 @@ class TimePeriod:
 
     @classmethod
     def from_text(cls, client: Client, text: str) -> TimePeriod:
-        if "about" in text:  # about an hour/about a minute
+        if "about" in text.lower():  # about an hour/about a minute
             unit = text.split()[2]
             amt = 1
         else:  # everything else: x days, x hours, x minutes
