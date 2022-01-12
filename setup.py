@@ -5,7 +5,7 @@ with open('README.md', 'r') as fp:
 
 
 setup(name='discloud',
-      version='1.0.0a',
+      version='1.0.3a',
       license='MIT',
       description="DisCloud API async wrapper",
       long_description=long_desc,
@@ -16,7 +16,7 @@ setup(name='discloud',
       packages=find_packages(),
       classifiers=[
           "Development Status :: 5 - Production/Stable",
-          "Programming Language :: Python :: 3.10"
+          "Programming Language :: Python :: 3.10",
           "License :: OSI Approved :: MIT License",
           "License :: OSI Approved :: Apache Software License",
           "Operating System :: OS Independent"
