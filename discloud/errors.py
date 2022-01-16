@@ -33,6 +33,10 @@ class InternalError(RequestError):
     pass
 
 
+class RateLimit(RequestError):
+    pass
+
+
 class InvalidArgument(DisCloudException):
     pass
 
