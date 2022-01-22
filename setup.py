@@ -5,7 +5,7 @@ with open('README.md', 'r') as fp:
 
 
 setup(name='discloud',
-      version='1.0.3a',
+      version='1.0.0b',
       license='MIT',
       description="DisCloud API async wrapper",
       long_description=long_desc,
