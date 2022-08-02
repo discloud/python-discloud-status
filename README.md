@@ -9,13 +9,17 @@ pip install git+https://github.com/discloud/python-discloud-status@dev
 ```
 
 ## Usage
-### Create client instance
+### Get Started
+First of all, you need to get your Discloud API-Token. You can create a new one by typing `.api` in the [Discloud Server](https://discord.gg/discloud).
+If you're in trouble on getting your Discloud API-Token, you can DM the Ticket bot (DisCloud ModMail#6424) in the server. The supporters will be glad on helping you
+
+### Creating a client
 ```python
 import discloud
-discloud_client = discloud.Client("Token")
+discloud_client = discloud.Client("API-Token")
 ```
 
-### Fetch user info
+### User info
 ```python
 user = await discloud_client.fetch_user_info()
 print(f"ID: '{user.id}'")
@@ -25,9 +29,9 @@ print(f"Expire date '{plan.expire_date}'")
 print(f"Ends in '{plan.expires_in}'")
 ```
 
-### Fetch bot info
+### Bot info
 ```python
-bot = await discloud_client.fetch_bot(bot_id=469310554108854274)
+bot = await discloud_client.fetch_bot(bot_id=BOT_ID)
 print(f"ID '{bot.id}'")
 print(f"Status '{bot.status}'")
 print(f"CPU '{bot.cpu}'")
@@ -39,30 +43,32 @@ print(f"Last restart '{bot.last_restart}'")
 
 ### Logs
 ```python
-logs = await discloud_client.fetch_logs(bot_id=ID_DO_BOT)
+logs = await discloud_client.fetch_logs(bot_id=BOT_ID)
 # or
 logs = await bot.fetch_logs()
 
-print(logs.url) # url for full logs
-
-print(str(logs))
-# or
-print(logs.text) # for last 1800 chars
+print(logs.url) # ".url" for a link with full logs
+print(logs.text) # ".text" for the last 1800 characters of your logs
 ```
 
 ### Restart
+`Bot.restart()`/`Client.restart_bot()` returns an Action, wich contains a `.message` attr so you can know if the reset was successful by printing it
 ```python
 result = await discloud_client.restart_bot(bot_id=BOT_ID)
 # or
 result = await bot.restart()
-print(result) # you will know if it was restarted
+
+print(result.message) # See if the restart was successful
 ```
 
 ### Commit
+`Bot.commit()`/`Client.commit()` returns an Action. Print the `.message` of it to know if the commit was successful. <br />
+`*.commit()` accepts the `restart` kwarg. Set it to True to restart the bot after a commit, False to not.
 ```python
-file = discloud.File("file.zip") # precisa ser em zip
-await discloud_client.commit(bot_id=BOT_ID, file=file, restart=True)
+file = discloud.File("eggs.zip") # Must be .zip
+result = await discloud_client.commit(bot_id=BOT_ID, file=file, restart=True)
 # or
-r = await bot.commit(file=file, restart=False)
-print(r) # know if commit was successful
+result = await bot.commit(file=file, restart=True)
+
+print(result.message) # See if the commit was successful
 ```
