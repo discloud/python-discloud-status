@@ -8,7 +8,7 @@ Nota: precisa do https://git-scm.com
 pip install git+https://github.com/discloud/python-discloud-status@dev
 ```
 ## Uso
-### Inicando
+### Iniciando
 Antes de tudo, você precisa obter seu API-Token da Discloud. Você pode criar um novo digitando `.api` no [Servidor da Discloud](https://discord.gg/discloud).
 Se você estiver com problemas para obter seu API-Token, você pode enviar uma DM para o bot de Tickets da Discloud (DisCloud ModMail#6424) no servidor. Os apoiadores estarão felizes em ajudá-lo
 ```python
