@@ -1,0 +1,79 @@
+from __future__ import annotations
+
+from typing import Dict, List, Literal, Optional, TypedDict, Union
+
+
+class RawResponseData(TypedDict):
+    message: Optional[str]
+    status: Literal["ok", "error"]
+    statusCode: Optional[int]
+
+
+class AppData(TypedDict):
+    id: str
+    container: str
+    cpu: str
+    memory: str
+    ssd: str
+    netIO: Dict[str, str]
+    last_restart: str
+    startedAt: str
+
+
+class BackupData(TypedDict):
+    id: str
+    url: str
+
+
+class LogsData(TypedDict):
+    id: str
+    terminal: Dict[str, str]
+
+
+class ModData(TypedDict):
+    modID: str
+    perms: List[str]
+
+
+class UserData(TypedDict):
+    userID: str
+    totalRamMb: int
+    ramUsedMb: int
+    apps: List[str]
+    plan: str
+    lastDataLeft: Dict[str, int]
+    planDataEnd: str
+    locale: str
+
+
+class ResponsePayload(RawResponseData):
+    user: Optional[UserData]
+    apps: Optional[Union[Union[List[AppData], AppData], Union[List[LogsData], LogsData]]]
+
+
+class AppsPayload(RawResponseData):
+    apps: Union[List[AppData], AppData]
+
+
+class AppModPayload(RawResponseData):
+    app: Dict[str, Union[str, List[str]]]
+
+
+class BackupPayload(RawResponseData):
+    backups: Union[List[BackupData], BackupData]
+
+
+class LocaleUpdatePayload(RawResponseData):
+    locale: str
+
+
+class LogsPayload(RawResponseData):
+    apps: Union[List[LogsData], LogsData]
+
+
+class ModsPayload(RawResponseData):
+    team: List[ModData]
+
+
+class UserPayload(RawResponseData):
+    user: UserData
