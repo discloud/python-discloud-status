@@ -145,7 +145,7 @@ class RequestManager:
         self.api_token: str = client.api_token
         self.__session = aiohttp.ClientSession
         self.version: int = 2  # kwargs.get("version", 2)
-        # self.debug: bool = kwargs.get("debug", False) # maybe later
+        self.debug: bool = kwargs.get("debug", False)
         self.rate_limit_remaining: int = 20
 
     async def request(self, route: Route, **kwargs) -> Any:
@@ -173,7 +173,8 @@ class RequestManager:
                 if code == 200:
                     data = await response.json()
                     r_headers = response.headers
-                    print(data)
+                    if self.debug:
+                        print(data)
                     remain = int(r_headers['ratelimit-remaining'])
                     self.rate_limit_remaining = remain  # todo improve?
                     return data
