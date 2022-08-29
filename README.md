@@ -15,6 +15,19 @@ If you're in trouble on getting your Discloud API-Token, you can DM the Ticket b
 
 Note: currently this uses the new API version which is available for few users.
 
+### Understanding the returns
+#### Action
+All methods that doesn't get information(e.g. start app/change ram/add mod) returns an `Action`. It has `.status` attribute, which is either "ok" when no issues happened, or "error" when something happened. It also contains `.message` attribute which is always returned when an error ocurrs, and is given on almost all actions.
+
+#### Backup
+WIP
+#### Logs
+WIP
+#### User
+WIP
+#### Application
+WIP
+
 ### Creating a client
 ```python
 import discloud
@@ -62,8 +75,7 @@ print(logs.small_logs) # around last 1800 characters of your logs
 ```
 
 #### Start/Restart/Stop
-`Client.start_app()`/`Client.restart_app()`/`Client.stop_app()` returns an Action, which contains `.status` attribute so you can know if it was successful and `.message` attr 
-so you can know what happened if `.status` is an error
+`Client.start_app()`/`Client.restart_app()`/`Client.stop_app()` returns an `Action`.
 ```python
 # note: don't expect to get the results there if you use inside of your bot since its going to get shutdown
 start_result = await client.start_app(app_id="APP_ID")
@@ -76,7 +88,7 @@ print(stop_result) # See if the stop was successful
 ```
 
 #### Commit
-`Client.commit()` returns an Action. The `.status` is "ok" if no issues and the message will say that it was successful, otherwise the `.message` will give the detailed error
+`Client.commit()` returns an `Action`.
 ```python
 # note: this always restart your bot so you won't get a result if its inside of your bot
 file = discloud.File("eggs.zip") # Must be .zip
@@ -93,15 +105,15 @@ print(backup.url) # Get backup url
 ```
 
 #### Update Ram
-`Client.ram()` returns an Action. The `.status` is "ok" if no issues and the message will say that it was successful, otherwise the `.message` will give the detailed error
+`Client.ram()` returns an `Action`.
 ```python
 result = await client.ram(app_id="APP_ID", NEW_RAM)
 print(result.message) # See if ram memory was updated
 ```
 
 #### Upload
-`Client.upload_app()` returns an Action. The `.status` is "ok" if no issues and the message will say that it was successful, otherwise the `.message` will give the detailed error
-Note: the .zip must have a `discloud.config` file, more info at: https://docs.discloudbot.com/v/en/suport/faq/discloud.config
+`Client.upload_app()` returns an `Action`.
+Note: the .zip must have a `discloud.config` file, more info at [documentation](https://docs.discloudbot.com/v/en/suport/faq/discloud.config)
 ```python
 result = await client.upload_app(file=discloud.File("my_bot.zip'))
 print(result.message) # See if the app was successfully added
@@ -109,7 +121,7 @@ print(result.message) # See if the app was successfully added
 
 
 #### Delete
-`Client.delete_app()` returns an Action. The `.status` is "ok" if no issues and the message will say that it was successful, otherwise the `.message` will give the detailed error
+`Client.delete_app()` returns an `Action`.
 ```python
 result = await client.delete_app(app_id="APP_ID")
 print(result.message) # See if the app was successfully deleted
@@ -128,24 +140,31 @@ Second, be aware of what mods can currently do, actually they can have one or mo
 #### Application Owners
 To add a moderator to your app you must first have a `Gold Plan` or above.
 ##### Adding a moderator
+`ModManager.add_mod()`
 ```python
 permissions = ["start_app"]
 await mod_client.add_mod("MOD_ID", permissions)
 ```
 ##### Removing a moderator
+`ModManager.remove_mod()`
 ```python
 await mod_client.remove_mod("MOD_ID")
 ```
 
 ##### Changing moderator permissions
+`ModManager.edit_mod_perms()`
 ```python
 new_permissions = ["start_app", "restart_app"] # note: this remove existing perms if they are not there
 await mod_client.edit_mod_perms("MOD_ID", new_permissions)
 ```
 
-#### Getting all moderators
+##### Getting all moderators
+`ModManager.get_mods()`
 ```python
-await mod_client.get_mods()
+mods = await mod_client.get_mods()
+print(mods) # 
 ```
 
-
+#### Application moderators
+For each command you can do you will need the respective permission as mentioned above
+Commands: `ModManager.start()`, `ModManager.restart()`, `ModManager.stop()`, `ModManager.commit()`, `ModManager.backup()`, `ModManager.logs()`,  `ModManager.change_ram()`, `ModManager.status()`, 
