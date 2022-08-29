@@ -51,7 +51,7 @@ print(f"Locale '{user.locale}'"
 
 #### Info
 ```python
-bot = await client.app_info(app_id="APP_ID")
+bot = await client.app_info(target="APP_ID")
 print(f"ID '{bot.id}'")
 print(f"Status '{bot.status}'")
 print(f"CPU '{bot.cpu}'")
@@ -68,7 +68,7 @@ print(f"Last restart '{bot.last_restart}'")
 #### Logs
 `Client.app_logs()` returns a Logs. The`.logs` attribute will give you the full logs content, `.small_logs` will give the last 1800 characters
 ```python
-logs = await client.app_logs(app_id="APP_ID")
+logs = await client.app_logs(target="APP_ID")
 
 print(logs.logs) # complete logs
 print(logs.small_logs) # around last 1800 characters of your logs
@@ -78,9 +78,9 @@ print(logs.small_logs) # around last 1800 characters of your logs
 `Client.start_app()`/`Client.restart_app()`/`Client.stop_app()` returns an `Action`.
 ```python
 # note: don't expect to get the results there if you use inside of your bot since its going to get shutdown
-start_result = await client.start_app(app_id="APP_ID")
-restart_result = await client.restart_app(app_id="APP_ID")
-stop_result = await client.stop_app(app_id="APP_ID")
+start_result = await client.start_app(target="APP_ID")
+restart_result = await client.restart_app(target="APP_ID")
+stop_result = await client.stop_app(target="APP_ID")
 
 print(start_result) # See if the start was successful
 print(restart_result) # See if the restart was successful
@@ -100,7 +100,7 @@ print(result.message) # See if the commit was successful
 #### Backup
 `Client.backup()` returns a Backup. The `.url` attribute will give you the link
 ```python
-backup = await client.backup(app_id="APP_ID")
+backup = await client.backup(target="APP_ID")
 print(backup.url) # Get backup url
 ```
 
@@ -143,19 +143,19 @@ To add a moderator to your app you must first have a `Gold Plan` or above.
 `ModManager.add_mod()`
 ```python
 permissions = ["start_app"]
-await mod_client.add_mod("MOD_ID", permissions)
+await mod_client.add_mod(mod_id="MOD_ID", permissions)
 ```
 ##### Removing a moderator
 `ModManager.remove_mod()`
 ```python
-await mod_client.remove_mod("MOD_ID")
+await mod_client.remove_mod(mod_id="MOD_ID")
 ```
 
 ##### Changing moderator permissions
 `ModManager.edit_mod_perms()`
 ```python
 new_permissions = ["start_app", "restart_app"] # note: this remove existing perms if they are not there
-await mod_client.edit_mod_perms("MOD_ID", new_permissions)
+await mod_client.edit_mod_perms(mod_id="MOD_ID", new_permissions)
 ```
 
 ##### Getting all moderators
