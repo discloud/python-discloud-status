@@ -35,6 +35,7 @@ print(f"Locale '{user.locale}'"
 ```
 
 ### Application
+
 #### Info
 ```python
 bot = await client.app_info(app_id="APP_ID")
@@ -88,7 +89,7 @@ print(result.message) # See if the commit was successful
 `Client.backup()` returns a Backup. The `.url` attribute will give you the link
 ```python
 backup = await client.backup(app_id="APP_ID")
-print(backup.url) # See if the commit was successful
+print(backup.url) # Get backup url
 ```
 
 #### Update Ram
@@ -99,7 +100,12 @@ print(result.message) # See if ram memory was updated
 ```
 
 #### Upload
-WIP
+`Client.upload_app()` returns an Action. The `.status` is "ok" if no issues and the message will say that it was successful, otherwise the `.message` will give the detailed error
+Note: the .zip must have a `discloud.config` file, more info at: https://docs.discloudbot.com/v/en/suport/faq/discloud.config
+```python
+result = await client.upload_app(file=discloud.File("my_bot.zip'))
+print(result.message) # See if the app was successfully added
+```
 
 
 #### Delete
@@ -109,6 +115,37 @@ result = await client.delete_app(app_id="APP_ID")
 print(result.message) # See if the app was successfully deleted
 ```
 
-#### Mods system
-WIP
+### Mods System
+First you need to setup a specific client to manage bot mods or manage a bot as mod.
+```python
+import discloud
+
+client = discloud.Client("API-Token")
+mod_client = discloud.ModManager(client, "APP_ID")
+```
+Second, be aware of what mods can currently do, actually they can have one or more of these permissions:
+"start_app", "stop_app", "restart_app", "logs_app", "commit_app", "edit_ram", "backup_app", "status_app"
+#### Application Owners
+To add a moderator to your app you must first have a `Gold Plan` or above.
+##### Adding a moderator
+```python
+permissions = ["start_app"]
+await mod_client.add_mod("MOD_ID", permissions)
+```
+##### Removing a moderator
+```python
+await mod_client.remove_mod("MOD_ID")
+```
+
+##### Changing moderator permissions
+```python
+new_permissions = ["start_app", "restart_app"] # note: this remove existing perms if they are not there
+await mod_client.edit_mod_perms("MOD_ID", new_permissions)
+```
+
+#### Getting all moderators
+```python
+await mod_client.get_mods()
+```
+
 
