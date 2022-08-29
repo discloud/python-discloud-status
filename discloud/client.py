@@ -21,7 +21,7 @@ class Client:
         self.language = language
         return Action(response)
 
-    async def delete_app(self, app_id) -> Action:
+    async def delete_app(self, app_id: str) -> Action:
         response: Response = await self.http.delete_app(app_id)
         return Action(response)
 
