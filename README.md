@@ -68,7 +68,7 @@ print(f"Last restart '{bot.last_restart}'")
 #### Logs
 `Client.app_logs()` returns a Logs. The`.logs` attribute will give you the full logs content, `.small_logs` will give the last 1800 characters
 ```python
-logs = await client.app_logs(target="APP_ID")
+logs = await client.logs(target="APP_ID")
 
 print(logs.full) # complete logs
 print(logs.small) # around last 1800 characters of your logs
