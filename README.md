@@ -20,9 +20,9 @@ Note: currently this uses the new API version which is available for few users.
 All methods that doesn't get information(e.g. start app/change ram/add mod) returns an `Action`. It has `.status` attribute, which is either "ok" when no issues happened, or "error" when something happened. It also contains `.message` attribute which is always returned when an error ocurrs, and is given on almost all actions.
 
 #### Backup
-WIP
+Backup has a `.url` attribute that gives the application's backup link.
 #### Logs
-WIP
+Logs has a `.small` attribute which returns the last ~1800 chars of your app logs, and a `.full` attribute that gives the complete logs
 #### User
 WIP
 #### Application
@@ -36,7 +36,7 @@ client = discloud.Client("API-Token")
 
 ### Userinfo
 ```python
-user = await discloud_client.user_info()
+user = await client.user_info()
 print(f"ID: '{user.id}'")
 plan = user.plan
 print(f"Plan '{plan}'")
@@ -44,7 +44,7 @@ print(f"Expire date '{plan.expire_date}'")
 print(f"Ends in '{plan.expires_in}'")
 print(f"Used ram '{user.using_ram}'")
 print(f"Total ram '{user.total_ram}'")
-print(f"Locale '{user.locale}'"
+print(f"Locale '{user.locale}'")
 ```
 
 ### Application
@@ -70,8 +70,8 @@ print(f"Last restart '{bot.last_restart}'")
 ```python
 logs = await client.app_logs(target="APP_ID")
 
-print(logs.logs) # complete logs
-print(logs.small_logs) # around last 1800 characters of your logs
+print(logs.full) # complete logs
+print(logs.small) # around last 1800 characters of your logs
 ```
 
 #### Start/Restart/Stop
@@ -167,4 +167,4 @@ print(mods) #
 
 #### Application moderators
 For each command you can do you will need the respective permission as mentioned above
-Commands: `ModManager.start()`, `ModManager.restart()`, `ModManager.stop()`, `ModManager.commit()`, `ModManager.backup()`, `ModManager.logs()`,  `ModManager.change_ram()`, `ModManager.status()`, 
+Commands: `ModManager.start()`, `ModManager.restart()`, `ModManager.stop()`, `ModManager.commit()`, `ModManager.backup()`, `ModManager.logs()`,  `ModManager.ram()`, `ModManager.status()`, 
