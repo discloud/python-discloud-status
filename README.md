@@ -75,12 +75,12 @@ print(logs.small) # around last 1800 characters of your logs
 ```
 
 #### Start/Restart/Stop
-`Client.start_app()`/`Client.restart_app()`/`Client.stop_app()` returns an `Action`.
+`Client.start()`/`Client.restart()`/`Client.stop()` returns an `Action`.
 ```python
 # note: don't expect to get the results there if you use inside of your bot since its going to get shutdown
-start_result = await client.start_app(target="APP_ID")
-restart_result = await client.restart_app(target="APP_ID")
-stop_result = await client.stop_app(target="APP_ID")
+start_result = await client.start(target="APP_ID")
+restart_result = await client.restart(target="APP_ID")
+stop_result = await client.stop(target="APP_ID")
 
 print(start_result) # See if the start was successful
 print(restart_result) # See if the restart was successful
