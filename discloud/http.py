@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import aiohttp
-from typing import TYPE_CHECKING, Any, Dict, List
-from .errors import InvalidArgument, RequestError
+from typing import TYPE_CHECKING, Any
+from .errors import InvalidArgument, InvalidToken, RequestError
 from .discloud import File, Response
 from .discloud_typing import *
 
@@ -24,106 +24,33 @@ class Route:
         #        "BOT_RESTART": "/bot/{target}/restart{restart}"
         #   },
         2: {
-            "SET_LOCALE": {
-                "METHOD": "PUT",
-                "PATH": "/locale/{locale}"
-            },
-            "GET_USER_INFO": {
-                "METHOD": "GET",
-                "PATH": "/user"
-            },
-            "UPLOAD": {
-                "METHOD": "POST",
-                "PATH": "/upload"
-            },
-            "GET_STATUS": {
-                "METHOD": "GET",
-                "PATH": "/app/{target}/status"
-            },
-            "GET_LOGS": {
-                "METHOD": "GET",
-                "PATH": "/app/{target}/logs"
-            },
-            "START": {
-                "METHOD": "PUT",
-                "PATH": "/app/{target}/start"
-            },
-            "RESTART": {
-                "METHOD": "PUT",
-                "PATH": "/app/{target}/restart"
-            },
-            "STOP": {
-                "METHOD": "PUT",
-                "PATH": "/app/{target}/stop"
-            },
-            "COMMIT": {
-                "METHOD": "PUT",
-                "PATH": "/app/{app_id}/commit"
-            },
-            "DELETE": {
-                "METHOD": "DELETE",
-                "PATH": "/app/{app_id}/delete"
-            },
-            "RAM": {
-                "METHOD": "PUT",
-                "PATH": "/app/{app_id}/ram"
-            },
-            "BACKUP": {
-                "METHOD": "GET",
-                "PATH": "/app/{target}/backup"
-            },
+            "SET_LOCALE": {"METHOD": "PUT", "PATH": "/locale/{locale}"},
+            "GET_USER_INFO": {"METHOD": "GET", "PATH": "/user"},
+            "UPLOAD": {"METHOD": "POST", "PATH": "/upload"},
+            "GET_STATUS": {"METHOD": "GET", "PATH": "/app/{target}/status"},
+            "GET_LOGS": {"METHOD": "GET", "PATH": "/app/{target}/logs"},
+            "START": {"METHOD": "PUT", "PATH": "/app/{target}/start"},
+            "RESTART": {"METHOD": "PUT", "PATH": "/app/{target}/restart"},
+            "STOP": {"METHOD": "PUT", "PATH": "/app/{target}/stop"},
+            "COMMIT": {"METHOD": "PUT", "PATH": "/app/{app_id}/commit"},
+            "DELETE": {"METHOD": "DELETE", "PATH": "/app/{app_id}/delete"},
+            "RAM": {"METHOD": "PUT", "PATH": "/app/{app_id}/ram"},
+            "BACKUP": {"METHOD": "GET", "PATH": "/app/{target}/backup"},
             # mod management
-            "ADD_MOD": {
-                "METHOD": "POST",
-                "PATH": "/app/{app_id}/team"
-            },
-            "REMOVE_MOD": {
-                "METHOD": "DELETE",
-                "PATH": "/app/{app_id}/team/{mod_id}"
-            },
-            "EDIT_MOD": {
-                "METHOD": "PUT",
-                "PATH": "/app/{app_id}/team"
-            },
-            "GET_MODS": {
-                "METHOD": "GET",
-                "PATH": "/app/{app_id}/team"
-            },
+            "ADD_MOD": {"METHOD": "POST", "PATH": "/app/{app_id}/team"},
+            "REMOVE_MOD": {"METHOD": "DELETE", "PATH": "/app/{app_id}/team/{mod_id}"},
+            "EDIT_MOD": {"METHOD": "PUT", "PATH": "/app/{app_id}/team"},
+            "GET_MODS": {"METHOD": "GET", "PATH": "/app/{app_id}/team"},
             # mod stuff
-            "MOD_START_APP": {
-                "METHOD": "PUT",
-                "PATH": "/team/{app_id}/start"
-            },
-            "MOD_RESTART_APP": {
-                "METHOD": "PUT",
-                "PATH": "/team/{app_id}/restart"
-            },
-            "MOD_STOP_APP": {
-                "METHOD": "PUT",
-                "PATH": "/team/{app_id}/stop"
-            },
-            "MOD_BACKUP_APP": {
-                "METHOD": "GET",
-                "PATH": "/team/{app_id}/backup"
-            },
-            "MOD_COMMIT_APP": {
-                "METHOD": "PUT",
-                "PATH": "/team/{app_id}/commit"
-            },
+            "MOD_START_APP": {"METHOD": "PUT", "PATH": "/team/{app_id}/start"},
+            "MOD_RESTART_APP": {"METHOD": "PUT", "PATH": "/team/{app_id}/restart"},
+            "MOD_STOP_APP": {"METHOD": "PUT", "PATH": "/team/{app_id}/stop"},
+            "MOD_BACKUP_APP": {"METHOD": "GET", "PATH": "/team/{app_id}/backup"},
+            "MOD_COMMIT_APP": {"METHOD": "PUT", "PATH": "/team/{app_id}/commit"},
             # NA
-            "MOD_APP_LOGS": {
-                "METHOD": "GET",
-                "PATH": "/team/{app_id}/logs"
-            },
-            "MOD_CHANGE_RAM": {
-                "METHOD": "PUT",
-                "PATH": "/team/{app_id}/ram"
-            },
-            "MOD_APP_STATUS": {
-                "METHOD": "GET",
-                "PATH": "/team/{app_id}/status"
-            },
-
+            "MOD_APP_LOGS": {"METHOD": "GET", "PATH": "/team/{app_id}/logs"},
+            "MOD_CHANGE_RAM": {"METHOD": "PUT", "PATH": "/team/{app_id}/ram"},
+            "MOD_APP_STATUS": {"METHOD": "GET", "PATH": "/team/{app_id}/status"},
         }
     }
 
@@ -146,25 +73,25 @@ class RequestManager:
         self.__session = aiohttp.ClientSession
         self.version: int = 2  # kwargs.get("version", 2)
         self.debug: bool = kwargs.get("debug", False)
-        self.rate_limit_remaining: int = 20
+        self.rate_limit_remaining: int = 1
 
     async def request(self, route: Route, **kwargs) -> Any:
         method: str = route.method
         url: str = route.url
         headers: dict = {"api-token": self.api_token}
         if method == "PUT":
-            kwargs['skip_auto_headers'] = {'Content-Type'}
+            kwargs["skip_auto_headers"] = {"Content-Type"}
         if "file" in kwargs:
             file = kwargs.pop("file")
             form = aiohttp.FormData()
-            form.add_field("file", file.fp, filename=file.filename)
-            kwargs['data'] = form
+            form.add_field("file", file.bytes, filename=file.filename)
+            kwargs["data"] = form
             try:
-                del kwargs['skip_auto_headers']
+                del kwargs["skip_auto_headers"]
             except KeyError:
                 pass
         if "json" in kwargs:
-            headers['Content-Type'] = "application/json"
+            headers["Content-Type"] = "application/json"
         if self.rate_limit_remaining == 0:
             raise RequestError("Ratelimit still on cooldown")
         async with self.__session() as ses:
@@ -175,14 +102,19 @@ class RequestManager:
                     r_headers = response.headers
                     if self.debug:
                         print(data)
-                    remain = int(r_headers['ratelimit-remaining'])
+                    remain = int(r_headers["ratelimit-remaining"])
                     self.rate_limit_remaining = remain  # todo improve?
                     return data
-                if code != 200:
+                else:
+                    if code == 401:
+                        raise InvalidToken(
+                            "An invalid token was provided"
+                        )  # todo translate
                     d: dict = await response.json()
-                    msg: str = d.get('message', None)
-                    raise RequestError(f"""An error ocurred during {method} request to {url}\nERROR: {msg}""")
-                return
+                    msg: str = d.get("message", None)
+                    raise RequestError(
+                        f"""An error ocurred during {method} request to {url}\nERROR: {msg}"""
+                    )
 
     async def set_locale(self, lang: str) -> Response:
         route = Route(self.version, "SET_LOCALE", locale=lang)
@@ -263,7 +195,9 @@ class RequestManager:
         response: Response = Response("get_mods", result)
         return response
 
-    async def add_mod_for_app(self, app_id: str, mod_id: str, perms: List[str]) -> Response:
+    async def add_mod_for_app(
+        self, app_id: str, mod_id: str, perms: List[str]
+    ) -> Response:
         route = Route(self.version, "ADD_MOD", app_id=app_id)
         payload = {"modID": mod_id, "perms": perms}
         result: AppModPayload = await self.request(route, json=payload)
@@ -276,7 +210,9 @@ class RequestManager:
         response: Response = Response("remove_mod", result)
         return response
 
-    async def edit_mod_perms_for_app(self, app_id: str, mod_id: str, perms: List[str]) -> Response:
+    async def edit_mod_perms_for_app(
+        self, app_id: str, mod_id: str, perms: List[str]
+    ) -> Response:
         route = Route(self.version, "EDIT_MOD", app_id=app_id)
         payload = {"modID": mod_id, "perms": perms}
         result: AppModPayload = await self.request(route, json=payload)
