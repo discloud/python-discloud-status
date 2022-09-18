@@ -3,7 +3,7 @@ import enum
 import io
 from typing import TYPE_CHECKING, Any, List, Optional
 
-from .utils import TimePeriod, Date, MemoryInfo, NetworkInfo, translate
+from .utils import TimePeriod, Date, MemoryInfo, NetworkInfo, translate as t
 from .discloud_typing import *
 
 if TYPE_CHECKING:
@@ -41,8 +41,8 @@ class Response:
     def __init__(self, action: str, data: Any) -> None:
         self.type = ActionType[action]
         self.data = data
-        self.message: Optional[str] = data.get('message')
-        self.status: str = data['status']
+        self.message: Optional[str] = data.get("message")
+        self.status: str = data["status"]
 
     def __str__(self) -> str:
         return self.message if self.message else "No message"
@@ -53,18 +53,17 @@ class Action:
         self.status, self.message = response.status, response.message
 
     def __repr__(self) -> str:
-        return "<Message=\"%s\" status=\"%s\">" % (self.message, self.status)
+        return '<Message="%s" status="%s">' % (self.message, self.status)
 
     def __str__(self) -> str:
         return f"""STATUS: {self.status}\nMESSAGE: {self.message}"""
 
 
 class File:
-    def __init__(self, fp: str) -> None:
+    def __init__(self, fp: str | io.BufferedReader) -> None:
         if isinstance(fp, str) and not fp.endswith(".zip"):
-            raise ValueError("File must be .zip")   # todo: add custom error translations
-        self.fp = open(fp, "rb")
-        self.filename: str = self.fp.name
+            raise ValueError("File must be .zip")  # todo: add custom error translations
+        self.bytes = open(fp, "rb") if isinstance(fp, str) else fp
 
 
 class PlanType(enum.Enum):
@@ -80,8 +79,13 @@ class PlanType(enum.Enum):
 
 # Returns
 class Backup:
+    """
+    .class backup
+    ------------
+    """
+
     def __init__(self, data: BackupData) -> None:
-        self.url = data['url']
+        self.url = data["url"]
 
     def __str__(self) -> str:
         return self.url
@@ -89,27 +93,32 @@ class Backup:
 
 class Logs:
     def __init__(self, data: LogsData) -> None:
-        terminal = data['terminal']
-        self.logs = terminal['big']
-        self.small_logs = terminal['small']
+        terminal = data["terminal"]
+        self.full = terminal["big"]
+        self.small = terminal["small"]
 
     def __str__(self) -> str:
-        return self.logs
+        return self.full
 
 
 # Internal Objects
 class Plan:
     def __init__(self, data: UserData) -> None:
-        self.type: PlanType = PlanType[data['plan']]
-        self.lifetime: bool = data.get('planDataEnd') == "Lifetime"
-        self.language = data['locale']
+        self.type: PlanType = PlanType[data["plan"]]
+        self.lifetime: bool = data.get("planDataEnd") == "Lifetime"
+        self.language = data["locale"]
         is_pt = self.language == "pt-BR"
-        self.expire_date = None if self.lifetime else Date.from_string(data['planDataEnd'])
-        self.expires_in = translate("never", is_pt) if self.lifetime else TimePeriod.until_date(self.language,
-                                                                                                self.expire_date)
+        self.expire_date = (
+            None if self.lifetime else Date.from_string(data["planDataEnd"])
+        )
+        self.expires_in = (
+            t("never", is_pt)
+            if self.expire_date
+            else TimePeriod.until_date(self.language, self.expire_date)
+        )
 
     def __str__(self) -> str:
-        return translate(self.type.name, self.language == "pt-BR")
+        return t(self.type.name, self.language == "pt-BR")
 
     def __repr__(self) -> str:
         return "<Plan type=%s>" % self.type
@@ -117,8 +126,8 @@ class Plan:
 
 class ApplicationModerator:
     def __init__(self, data: ModData):
-        self.id: int = int(data['modID'])
-        self.perms: List[str] = data['perms']
+        self.id: int = int(data["modID"])
+        self.perms: List[str] = data["perms"]
 
 
 AppMod = ApplicationModerator
@@ -126,12 +135,12 @@ AppMod = ApplicationModerator
 
 class User:
     def __init__(self, client: Client, data: UserData) -> None:
-        self.id: int = int(data['userID'])
+        self.id: int = int(data["userID"])
         self.total_ram: int = data["totalRamMb"]
         self.using_ram: int = data["ramUsedMb"]
         self.apps: List[str]
         self.plan: Plan = Plan(data)
-        self.locale: str = data['locale']
+        self.locale: str = data["locale"]
 
     def _build_user_apps(self, app):
         ...
@@ -146,37 +155,42 @@ class PartialApplication(BaseApplication):
         self._client = client
         self.id = app_id
 
-    #async def get_info(self) -> Application:
+    # async def get_info(self) -> Application:
     #    bot = await self._client.app_info(self.id)
     #    return bot
 
 
 class Application(PartialApplication):
-    __slots__ = ("id",
-                 "status",
-                 "cpu",
-                 "memory",
-                 "last_restart")
+    __slots__ = ("id", "status", "cpu", "memory", "last_restart")
 
     def __init__(self, client: Client, data: AppData) -> None:
-        self.status: str = data['container']
-        self.cpu: str = data['cpu']
-        self.memory: MemoryInfo = MemoryInfo(data['memory'])
+        self.status: str = data["container"]
+        self.cpu: str = data["cpu"]
+        self.memory: MemoryInfo = MemoryInfo(data["memory"])
         is_online = self.status == "Online"
-        self.last_restart = TimePeriod.after_date(client.language,
-                                                  Date.from_string(data['startedAt'])) if is_online else "Offline"
-        self.net_info = NetworkInfo(data['netIO'])
-        self.ssd = data['ssd']
-        super().__init__(client, data['id'])
+        is_pt = client.language == "pt-BR"
+        self.start_date = (
+            Date.from_string(data["startedAt"])
+            if is_online
+            else t("Not available", is_pt)
+        )
+        self.online_since = (
+            TimePeriod.after_date(client.language, self.start_date)
+            if is_online
+            else t("Offline", is_pt)
+        )
+        self.net_info = NetworkInfo(data["netIO"])
+        self.ssd = data["ssd"]
+        super().__init__(client, data["id"])
 
-    #async def get_info(self):
+    # async def get_info(self):
     #    raise NotImplementedError
 
-    #async def restart(self):
+    # async def restart(self):
     #    return await self._client.restart(self.id)
 
-    #async def fetch_logs(self) -> Logs:
+    # async def fetch_logs(self) -> Logs:
     #    return await self._client.logs(self.id)
 
-    #async def commit(self, file: File):
+    # async def commit(self, file: File):
     #    return await self._client.commit(self.id, file)
