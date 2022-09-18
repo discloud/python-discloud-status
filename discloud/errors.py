@@ -20,5 +20,3 @@ class RateLimit(RequestError):
 
 class InvalidArgument(DisCloudException):
     pass
-
-

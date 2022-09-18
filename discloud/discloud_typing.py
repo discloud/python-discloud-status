@@ -48,7 +48,9 @@ class UserData(TypedDict):
 
 class ResponsePayload(RawResponseData):
     user: Optional[UserData]
-    apps: Optional[Union[Union[List[AppData], AppData], Union[List[LogsData], LogsData]]]
+    apps: Optional[
+        Union[Union[List[AppData], AppData], Union[List[LogsData], LogsData]]
+    ]
 
 
 class AppsPayload(RawResponseData):
