@@ -96,6 +96,7 @@ class Logs:
         terminal = data["terminal"]
         self.full = terminal["big"]
         self.small = terminal["small"]
+        self.url = terminal["url"]
 
     def __str__(self) -> str:
         return self.full
