@@ -1,21 +1,20 @@
 from __future__ import annotations
 import datetime
 import dateutil.parser
-import sys
-import traceback
+from typing import List, Tuple
 
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from .client import Client
-
-__all__ = ("MISSING",
-           "TimePeriod",
-           "Date",
-           "date_now",
-           "MemoryInfo",
-           "NetworkInfo",
-           "translate")
+__all__ = (
+    "MISSING",
+    "TimePeriod",
+    "check_perms",
+    "Date",
+    "date_now",
+    "MemoryInfo",
+    "NetworkInfo",
+    "mod_perms",
+    "translate",
+)
 
 
 PT_TRANSLATIONS = {
@@ -24,8 +23,32 @@ PT_TRANSLATIONS = {
     "Diamond": "Diamante",
     "Sapphire": "Safíra",
     # others
-    "never": "nunca"
+    "never": "nunca",
+    "day": "dia",
+    "hour": "hora",
+    "minute": "minuto",
+    "second": "segundo",
 }
+
+mod_perms = [
+    "start_app",
+    "stop_app",
+    "restart_app",
+    "logs_app",
+    "commit_app",
+    "edit_ram",
+    "backup_app",
+    "status_app",
+]
+
+
+def check_perms(perms) -> Tuple[List[str], List[str]]:
+    invalid = []
+    for perm in perms:
+        if perm not in mod_perms:
+            perms.remove(perm)
+            invalid.append(perm)
+    return perms, invalid
 
 
 def translate(string: str, pt: bool = False):
@@ -53,22 +76,14 @@ def date_now() -> datetime.datetime:
 
 
 class TimePeriod:
-    __slots__ = (
-        "days",
-        "hours",
-        "minutes",
-        "seconds",
-        "left",
-        "_client",
-        "_language"
-    )
+    __slots__ = ("days", "hours", "minutes", "seconds", "left", "_client", "_language")
 
     def __init__(self, language, left) -> None:
         self._language: str = language
-        self.days: int = left.get('days', 0)
-        self.hours: int = left.get('hours', 0)
-        self.minutes: int = left.get('minutes', 0)
-        self.seconds: int = left.get('seconds', 0)
+        self.days: int = left.get("days", 0)
+        self.hours: int = left.get("hours", 0)
+        self.minutes: int = left.get("minutes", 0)
+        self.seconds: int = left.get("seconds", 0)
 
     def __str__(self) -> str:
         return self.format_string()
@@ -78,28 +93,18 @@ class TimePeriod:
 
     @staticmethod
     def _converter_pt(secs: int) -> str:
-        info = {
-            "dia": 86400,
-            "hora": 3600,
-            "minuto": 60,
-            "segundo": 1
-        }
+        info = {"dia": 86400, "hora": 3600, "minuto": 60, "segundo": 1}
         result = []
         for unit, deli in info.items():
             if secs >= deli:
                 amt, secs = divmod(secs, deli)
                 add_s = "s" if amt > 1 else ""
                 result.append(f"{amt} {unit}{add_s}")
-        return ', '.join(result)
+        return ", ".join(result)
 
     @staticmethod
     def calculate_time(total_secs: float) -> dict:
-        info = {
-            "days": 86400,
-            "hours": 3600,
-            "minutes": 60,
-            "seconds": 1
-        }
+        info = {"days": 86400, "hours": 3600, "minutes": 60, "seconds": 1}
         result = {}
         for unit, deli in info.items():
             result[unit] = 0
@@ -113,7 +118,7 @@ class TimePeriod:
             "day": self.days,
             "hour": self.hours,
             "minute": self.minutes,
-            "second": self.seconds
+            "second": self.seconds,
         }
         result = []
         is_pt = self._language == "pt-BR"
@@ -123,7 +128,7 @@ class TimePeriod:
                 if v > 1:
                     s += "s"
                 result.append(s)
-        return ', '.join(result)
+        return ", ".join(result)
 
     @classmethod
     def after_date(cls, lang: str, date: Date) -> TimePeriod:
@@ -131,7 +136,7 @@ class TimePeriod:
         seconds = difference.total_seconds()
         time_data = cls.calculate_time(seconds)
         return cls(lang, time_data)
-        
+
     @classmethod
     def until_date(cls, lang: str, date: Date) -> TimePeriod:
         difference = date.date - date_now()
@@ -177,11 +182,11 @@ class NetworkInfo(StatInfo):
 
     @property
     def download(self):
-        return self._info.get('down', None)
+        return self._info.get("down", None)
 
     @property
     def upload(self):
-        return self._info.get('up', None)
+        return self._info.get("up", None)
 
 
 class MemoryInfo(StatInfo):
