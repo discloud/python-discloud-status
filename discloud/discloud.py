@@ -114,7 +114,7 @@ class Plan:
         )
         self.expires_in = (
             t("never", is_pt)
-            if self.expire_date
+            if not self.expire_date
             else TimePeriod.until_date(self.language, self.expire_date)
         )
 
