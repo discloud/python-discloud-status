@@ -41,6 +41,8 @@ def check_perms(perms) -> Tuple[List[str], List[str]]:
 
 class Translate:
     def get_fast_translator_provider(self) -> dict:
+        """Getting the best translation provider."""
+        
         providers = []
         translators_url = [
             "https://translate.argosopentech.com",
@@ -63,6 +65,8 @@ class Translate:
         return min(providers, key=lambda provider: provider['time']) if len(providers) >= 1 else {}
     
     def translate(self, string: str, target: str, source: str = None) -> str:
+        """Translate the string using the best provider."""
+
         provider = self.get_fast_translator_provider()
 
         if not provider or string == target:
