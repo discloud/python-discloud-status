@@ -106,11 +106,12 @@ class Logs:
 class Plan:
     def __init__(self, data: UserData) -> None:
         self.type: PlanType = PlanType[data["plan"]]
-        self.lifetime: bool = data.get("planDataEnd") == "Lifetime"
+        end_date = data.get("planDataEnd")
+        self.lifetime: bool = end_date == "Lifetime"
         self.language = data["locale"]
         is_pt = self.language == "pt-BR"
         self.expire_date = (
-            None if self.lifetime else Date.from_string(data["planDataEnd"])
+            None if self.lifetime or not end_date else Date.from_string(end_date)
         )
         self.expires_in = (
             t("never", is_pt)
