@@ -3,7 +3,6 @@ import datetime
 import dateutil.parser
 import requests
 from typing import List, Tuple
-from .errors import InvalidArgument
 from libretranslatepy import LibreTranslateAPI
 
 
