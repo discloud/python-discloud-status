@@ -16,7 +16,6 @@ class AppData(TypedDict):
     memory: str
     ssd: str
     netIO: Dict[str, str]
-    last_restart: str
     startedAt: str
 
 

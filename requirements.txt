@@ -1,3 +1,5 @@
 aiohttp
+requests
 setuptools
 python-dateutil
+git+https://github.com/argosopentech/LibreTranslate-py@main

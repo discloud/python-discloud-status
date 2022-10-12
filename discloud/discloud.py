@@ -3,12 +3,13 @@ import enum
 import io
 from typing import TYPE_CHECKING, Any, List, Optional
 
-from .utils import TimePeriod, Date, MemoryInfo, NetworkInfo, translate as t
+from .utils import TimePeriod, Date, MemoryInfo, NetworkInfo, Translate
 from .discloud_typing import *
 
 if TYPE_CHECKING:
     from .client import Client
 
+translate = Translate().translate
 
 class ActionType(enum.Enum):
     set_locale = LocaleUpdatePayload
@@ -109,18 +110,17 @@ class Plan:
         end_date = data.get("planDataEnd")
         self.lifetime: bool = end_date == "Lifetime"
         self.language = data["locale"]
-        is_pt = self.language == "pt-BR"
         self.expire_date = (
             None if self.lifetime or not end_date else Date.from_string(end_date)
         )
         self.expires_in = (
-            t("never", is_pt)
+            translate("never", self.language)
             if not self.expire_date
             else TimePeriod.until_date(self.language, self.expire_date)
         )
 
     def __str__(self) -> str:
-        return t(self.type.name, self.language == "pt-BR")
+        return translate(self.type.name, self.language)
 
     def __repr__(self) -> str:
         return "<Plan type=%s>" % self.type
@@ -163,23 +163,23 @@ class PartialApplication(BaseApplication):
 
 
 class Application(PartialApplication):
-    __slots__ = ("id", "status", "cpu", "memory", "last_restart")
+    __slots__ = ("id", "status", "cpu", "memory", "online_since", "start_date")
 
     def __init__(self, client: Client, data: AppData) -> None:
+        self.id: str = data['id']
         self.status: str = data["container"]
         self.cpu: str = data["cpu"]
         self.memory: MemoryInfo = MemoryInfo(data["memory"])
         is_online = self.status == "Online"
-        is_pt = client.language == "pt-BR"
         self.start_date = (
             Date.from_string(data["startedAt"])
             if is_online
-            else t("Not available", is_pt)
+            else translate("Not available", client.language)
         )
         self.online_since = (
             TimePeriod.after_date(client.language, self.start_date)
             if is_online
-            else t("Offline", is_pt)
+            else translate("Offline", client.language)
         )
         self.net_info = NetworkInfo(data["netIO"])
         self.ssd = data["ssd"]

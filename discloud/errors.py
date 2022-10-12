@@ -20,3 +20,7 @@ class RateLimit(RequestError):
 
 class InvalidArgument(DisCloudException):
     pass
+
+
+class TranslatorException(Exception):
+    pass

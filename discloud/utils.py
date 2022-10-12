@@ -1,7 +1,10 @@
 from __future__ import annotations
 import datetime
 import dateutil.parser
+import requests
 from typing import List, Tuple
+from .errors import InvalidArgument
+from libretranslatepy import LibreTranslateAPI
 
 
 __all__ = (
@@ -16,19 +19,6 @@ __all__ = (
     "translate",
 )
 
-
-PT_TRANSLATIONS = {
-    "Free": "Grátis",
-    "Platinum": "Platina",
-    "Diamond": "Diamante",
-    "Sapphire": "Safíra",
-    # others
-    "never": "nunca",
-    "day": "dia",
-    "hour": "hora",
-    "minute": "minuto",
-    "second": "segundo",
-}
 
 mod_perms = [
     "start_app",
@@ -50,12 +40,50 @@ def check_perms(perms) -> Tuple[List[str], List[str]]:
             invalid.append(perm)
     return perms, invalid
 
+class Translate:
+    def get_fast_translator_provider(self) -> dict:
+        providers = []
+        translators_url = [
+            "https://translate.argosopentech.com",
+            "https://libretranslate.de",
+            "https://lt.vern.cc"
+        ]
 
-def translate(string: str, pt: bool = False):
-    if pt:
-        return PT_TRANSLATIONS.get(string, string)
-    return string
+        for translator_url in translators_url:
+            try:
+                request = requests.get(translator_url, timeout=1.2)
+            except Exception:
+                continue
 
+            if request.status_code == 200:
+                providers.append({
+                    'url': request.url,
+                    'time': request.elapsed.total_seconds()
+                })
+
+        return min(providers, key=lambda provider: provider['time']) if len(providers) >= 1 else {}
+    
+    def translate(self, string: str, target: str, source: str = None) -> str:
+        provider = self.get_fast_translator_provider()
+
+        if not provider or string == target:
+            return string
+        
+        translator = LibreTranslateAPI(provider['url'])
+
+        for language in translator.languages():
+            if language['code'] == target:
+                break
+            else:
+                return string
+
+        if source is None:
+            source = translator.detect(string)[0]['language']
+
+            if target == source:
+                return string
+
+        return translator.translate(string, source, target)
 
 class Missing:
     def __eq__(self, other):
@@ -85,8 +113,8 @@ class TimePeriod:
         self.minutes: int = left.get("minutes", 0)
         self.seconds: int = left.get("seconds", 0)
 
-    def __str__(self) -> str:
-        return self.format_string()
+    # def __str__(self) -> str:
+    #     return self.format_string()
 
     def __repr__(self) -> str:
         return "<TimePeriod days=%s hours=%s minutes=%s seconds=%s>"
@@ -113,22 +141,22 @@ class TimePeriod:
                 result[unit] = int(amt)
         return result
 
-    def format_string(self) -> str:
-        info = {
-            "day": self.days,
-            "hour": self.hours,
-            "minute": self.minutes,
-            "second": self.seconds,
-        }
-        result = []
-        is_pt = self._language == "pt-BR"
-        for k, v in info.items():
-            if v:
-                s = f"{v} {translate(k, is_pt)}"
-                if v > 1:
-                    s += "s"
-                result.append(s)
-        return ", ".join(result)
+    # def format_string(self) -> str:
+    #     info = {
+    #         "day": self.days,
+    #         "hour": self.hours,
+    #         "minute": self.minutes,
+    #         "second": self.seconds,
+    #     }
+    #     result = []
+    #     is_pt = self._language == "pt-BR"
+    #     for k, v in info.items():
+    #         if v:
+    #             s = f"{v} {translate(k, is_pt)}"
+    #             if v > 1:
+    #                 s += "s"
+    #             result.append(s)
+    #     return ", ".join(result)
 
     @classmethod
     def after_date(cls, lang: str, date: Date) -> TimePeriod:
@@ -181,11 +209,11 @@ class NetworkInfo(StatInfo):
         self._info = info
 
     @property
-    def download(self):
+    def download(self) -> str:
         return self._info.get("down", None)
 
     @property
-    def upload(self):
+    def upload(self) -> str:
         return self._info.get("up", None)
 
 
