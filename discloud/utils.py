@@ -69,7 +69,7 @@ class Translate:
 
         provider = self.get_fast_translator_provider()
 
-        if not provider or string == target:
+        if not provider or target == source:
             return string
         
         translator = LibreTranslateAPI(provider['url'])
