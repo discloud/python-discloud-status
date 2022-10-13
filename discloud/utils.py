@@ -73,11 +73,12 @@ class Translate:
             return string
         
         translator = LibreTranslateAPI(provider['url'])
+        supported_languages = translator.languages()
 
-        for language in translator.languages():
+        for index, language in enumerate(supported_languages):
             if language['code'] == target:
                 break
-            else:
+            elif len(supported_languages) == index + 1:
                 return string
 
         if source is None:
