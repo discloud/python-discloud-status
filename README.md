@@ -62,7 +62,8 @@ print(f"Mem usada '{bot.memory.using}'")
 print(f"SSD '{bot.ssd}'")
 print(f"Download '{bot.net_info.download}'")
 print(f"Upload '{bot.net_info.upload}'")
-print(f"Last restart '{bot.last_restart}'")
+print(f"Online since '{bot.online_since}'")
+print(f"Started at '{bot.start_date}')
 ```
 
 #### Logs
