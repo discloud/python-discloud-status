@@ -163,7 +163,7 @@ class PartialApplication(BaseApplication):
 
 
 class Application(PartialApplication):
-    __slots__ = ("id", "status", "cpu", "memory", "last_restart")
+    __slots__ = ("id", "status", "cpu", "memory", "start_date", "online_since")
 
     def __init__(self, client: Client, data: AppData) -> None:
         self.status: str = data["container"]
