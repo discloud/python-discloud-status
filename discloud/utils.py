@@ -177,15 +177,15 @@ class StatInfo:  # possible future stats add
 
 
 class NetworkInfo(StatInfo):
-    def __init__(self, info: dict):
+    def __init__(self, info: dict) -> None:
         self._info = info
 
     @property
-    def download(self):
+    def download(self) -> str:
         return self._info.get("down", None)
 
     @property
-    def upload(self):
+    def upload(self) -> str:
         return self._info.get("up", None)
 
 
@@ -197,9 +197,9 @@ class MemoryInfo(StatInfo):
         return self._info
 
     @property
-    def using(self):
+    def using(self) -> str:
         return self._info.split("/")[0]
 
     @property
-    def available(self):
+    def available(self) -> str:
         return self._info.split("/")[1]
