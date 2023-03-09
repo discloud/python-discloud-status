@@ -63,7 +63,7 @@ print(f"SSD '{bot.ssd}'")
 print(f"Download '{bot.net_info.download}'")
 print(f"Upload '{bot.net_info.upload}'")
 print(f"Online since '{bot.online_since}'")
-print(f"Started at '{bot.start_date}')
+print(f"Started at '{bot.start_date}'")
 ```
 
 #### Logs
@@ -116,7 +116,7 @@ print(result.message) # See if ram memory was updated
 `Client.upload_app()` returns an `Action`.
 Note: the .zip must have a `discloud.config` file, more info at [documentation](https://docs.discloudbot.com/v/en/suport/faq/discloud.config)
 ```python
-result = await client.upload_app(file=discloud.File("my_bot.zip'))
+result = await client.upload_app(file=discloud.File("my_bot.zip"))
 print(result.message) # See if the app was successfully added
 ```
 
