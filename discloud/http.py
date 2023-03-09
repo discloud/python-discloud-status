@@ -118,50 +118,50 @@ class RequestManager:
 
     async def set_locale(self, lang: str) -> Response:
         route = Route(self.version, "SET_LOCALE", locale=lang)
-        result: RawResponseData = await self.request(route)
-        response: Response = Response("set_locale", result)
+        result = await self.request(route)
+        response = Response("set_locale", result)
         return response
 
     async def commit_app(self, app_id: str, file: File) -> Response:
         route = Route(self.version, "COMMIT", app_id=app_id)
-        result: RawResponseData = await self.request(route, file=file)
-        response: Response = Response("commit", result)
+        result = await self.request(route, file=file)
+        response = Response("commit", result)
         return response
 
     async def delete_app(self, app_id: str) -> Response:
         route = Route(self.version, "DELETE", app_id=app_id)
-        result: RawResponseData = await self.request(route)
-        response: Response = Response("delete", result)
+        result = await self.request(route)
+        response = Response("delete", result)
         return response
 
     async def fetch_app(self, target: str) -> Response:
         route = Route(self.version, "GET_STATUS", target=target)
-        result: AppsPayload = await self.request(route)
-        response: Response = Response("status", result)
+        result = await self.request(route)
+        response = Response("status", result)
         return response
 
     async def fetch_logs(self, target: str) -> Response:
         route = Route(self.version, "GET_LOGS", target=target)
-        result: LogsPayload = await self.request(route)
+        result = await self.request(route)
         response = Response("logs", result)
         return response
 
     async def fetch_user(self) -> Response:
         route = Route(self.version, "GET_USER_INFO")
-        result: UserPayload = await self.request(route)
+        result = await self.request(route)
         response = Response("userinfo", result)
         return response
 
     async def start(self, target: str) -> Response:
         route = Route(self.version, "START", target=target)
-        result: RawResponseData = await self.request(route)
+        result = await self.request(route)
         response = Response("start", result)
         return response
 
     async def stop(self, target: str) -> Response:
         route = Route(self.version, "STOP", target=target)
-        result: RawResponseData = await self.request(route)
-        response: Response = Response("stop", result)
+        result = await self.request(route)
+        response = Response("stop", result)
         return response
 
     async def restart(self, target: str) -> Response:
@@ -191,7 +191,7 @@ class RequestManager:
     # mod stuff
     async def get_mods_for_app(self, app_id: str) -> Response:
         route = Route(self.version, "GET_MODS", app_id=app_id)
-        result: ModsPayload = await self.request(route)
+        result = await self.request(route)
         response: Response = Response("get_mods", result)
         return response
 
@@ -200,14 +200,14 @@ class RequestManager:
     ) -> Response:
         route = Route(self.version, "ADD_MOD", app_id=app_id)
         payload = {"modID": mod_id, "perms": perms}
-        result: AppModPayload = await self.request(route, json=payload)
-        response: Response = Response("add_mod", result)
+        result = await self.request(route, json=payload)
+        response = Response("add_mod", result)
         return response
 
     async def remove_mod_for_app(self, app_id: str, mod_id: str) -> Response:
         route = Route(self.version, "REMOVE_MOD", app_id=app_id, mod_id=mod_id)
-        result: RawResponseData = await self.request(route)
-        response: Response = Response("remove_mod", result)
+        result = await self.request(route)
+        response = Response("remove_mod", result)
         return response
 
     async def edit_mod_perms_for_app(
@@ -215,55 +215,54 @@ class RequestManager:
     ) -> Response:
         route = Route(self.version, "EDIT_MOD", app_id=app_id)
         payload = {"modID": mod_id, "perms": perms}
-        result: AppModPayload = await self.request(route, json=payload)
-        response: Response = Response("edit_mod", result)
+        result = await self.request(route, json=payload)
+        response = Response("edit_mod", result)
         return response
 
-    # mod cmds todo
     async def mod_start_app(self, app_id: str) -> Response:
         route = Route(self.version, "MOD_START_APP", app_id=app_id)
-        result: RawResponseData = await self.request(route)
-        response: Response = Response("mod_start", result)
+        result = await self.request(route)
+        response = Response("mod_start", result)
         return response
 
     async def mod_stop_app(self, app_id: str) -> Response:
         route = Route(self.version, "MOD_STOP_APP", app_id=app_id)
-        result: RawResponseData = await self.request(route)
-        response: Response = Response("mod_stop", result)
+        result = await self.request(route)
+        response = Response("mod_stop", result)
         return response
 
     async def mod_restart_app(self, app_id: str) -> Response:
         route = Route(self.version, "MOD_RESTART_APP", app_id=app_id)
-        result: RawResponseData = await self.request(route)
-        response: Response = Response("mod_restart", result)
+        result = await self.request(route)
+        response = Response("mod_restart", result)
         return response
 
     async def mod_backup_app(self, app_id: str) -> Response:
         route = Route(self.version, "MOD_BACKUP_APP", app_id=app_id)
-        result: BackupPayload = await self.request(route)
-        response: Response = Response("mod_backup", result)
+        result = await self.request(route)
+        response = Response("mod_backup", result)
         return response
 
     async def mod_commit_app(self, app_id: str, file: File) -> Response:
         route = Route(self.version, "MOD_COMMIT_APP", app_id=app_id)
-        result: RawResponseData = await self.request(route, file=file)
-        response: Response = Response("mod_commit", result)
+        result = await self.request(route, file=file)
+        response = Response("mod_commit", result)
         return response
 
     async def mod_app_logs(self, app_id: str) -> Response:
         route = Route(self.version, "MOD_APP_LOGS", app_id=app_id)
-        result: LogsPayload = await self.request(route)
-        response: Response = Response("mod_logs", result)
+        result = await self.request(route)
+        response = Response("mod_logs", result)
         return response
 
     async def mod_change_app_ram(self, app_id: str, new_ram=int) -> Response:
         route = Route(self.version, "MOD_CHANGE_RAM", app_id=app_id)
-        result: RawResponseData = await self.request(route, json={"ramMB": new_ram})
-        response: Response = Response("mod_ram", result)
+        result = await self.request(route, json={"ramMB": new_ram})
+        response = Response("mod_ram", result)
         return response
 
     async def mod_app_status(self, app_id: str) -> Response:
         route = Route(self.version, "MOD_APP_STATUS", app_id=app_id)
-        result: AppsPayload = await self.request(route)
-        response: Response = Response("mod_status", result)
+        result = await self.request(route)
+        response = Response("mod_status", result)
         return response
