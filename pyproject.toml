@@ -18,6 +18,12 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
+license = {text = "MIT License"}
+keywords = ["discloud"]
+dependencies = [
+    "python-dateutil",
+    "aiohttp"
+]
 
 [project.urls]
 "Homepage" = "https://github.com/discloud/python-discloud-status"
