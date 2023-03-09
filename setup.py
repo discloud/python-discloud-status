@@ -3,9 +3,6 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as fp:
     long_desc = fp.read()
 
-requirements = []
-with open("requirements.txt") as f:
-    requirements = f.read().splitlines()
 
 setup(
     name="discloud",
@@ -17,7 +14,6 @@ setup(
     author="Algueem",
     url="https://github.com/discloud/python-discloud-status",
     keywords=["discloud"],
-    install_requires=requirements,
     packages=find_packages(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
