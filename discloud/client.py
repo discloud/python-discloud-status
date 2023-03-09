@@ -4,7 +4,7 @@ from .errors import InvalidArgument
 from .discloud import Action, Application, AppMod, Backup, File, Logs, Response, User
 from .discloud_typing import *
 
-from typing import List, Literal
+from typing import List, Literal, overload
 
 
 class Client:
@@ -39,6 +39,14 @@ class Client:
         user_data: UserData = data["user"]
         return User(self, user_data)
 
+    @overload
+    async def app_info(self, target: str) -> Application:
+        ...
+
+    @overload
+    async def app_info(self, target: Literal["all"]) -> List[Application]:
+        ...
+
     async def app_info(
         self, target: str | Literal["all"]
     ) -> Application | List[Application]:
@@ -46,9 +54,7 @@ class Client:
         data: AppsPayload = response.data
         apps = data["apps"]
         if isinstance(apps, list):
-            apps: List[AppData]
             return [Application(self, app_data) for app_data in apps]
-        apps: AppData
         return Application(self, apps)
 
     async def restart(self, target: str | Literal["all"]) -> Action:
@@ -63,14 +69,20 @@ class Client:
         response = await self.http.stop(target)
         return Action(response)
 
+    @overload
+    async def logs(self, target: str) -> Logs:
+        ...
+
+    @overload
+    async def logs(self, target: Literal["all"]) -> List[Logs]:
+        ...
+
     async def logs(self, target: str | Literal["all"]) -> Logs | List[Logs]:
         response: Response = await self.http.fetch_logs(target)
-        data: LogsPayload = response.data
+        data = response.data
         logs = data["apps"]
         if isinstance(logs, list):
-            logs: List[LogsData]
             return [Logs(logs_data) for logs_data in logs]
-        logs: LogsData
         return Logs(logs)
 
     async def commit(self, app_id: str, file: File) -> Action:
@@ -83,14 +95,20 @@ class Client:
         response: Response = await self.http.change_app_ram(app_id, new_ram)
         return Action(response)
 
+    @overload
+    async def backup(self, target: str) -> Backup:
+        ...
+
+    @overload
+    async def backup(self, target: Literal["all"]):
+        ...
+
     async def backup(self, target: str | Literal["all"]) -> Backup | List[Backup]:
         response: Response = await self.http.backup(target)
         data: BackupPayload = response.data
         backups = data["backups"]
         if isinstance(backups, list):
-            backups: List[BackupData]
             return [Backup(backup_data) for backup_data in backups]
-        backups: BackupData
         return Backup(backups)
 
 
@@ -105,9 +123,7 @@ class ModManager:
         data: ModsPayload = response.data
         mods = data["team"]
         if isinstance(mods, list):
-            mods: List[ModData]
             return [AppMod(mod_data) for mod_data in mods]
-        mods: ModData
         return AppMod(mods)
 
     async def add_mod(self, mod_id: str, perms: List[str]) -> Action:  # keep an eye
@@ -175,9 +191,7 @@ class ModManager:
         data: LogsPayload = response.data
         logs = data["apps"]
         if isinstance(logs, list):
-            logs: List[LogsData]
             return [Logs(logs_data) for logs_data in logs]
-        logs: LogsData
         return Logs(logs)
 
     async def ram(self, new_ram: int) -> Action:
@@ -189,7 +203,5 @@ class ModManager:
         data: AppsPayload = response.data
         apps = data["apps"]
         if isinstance(apps, list):
-            apps: List[AppData]
             return [Application(self.client, app_data) for app_data in apps]
-        apps: AppData
         return Application(self.client, apps)
