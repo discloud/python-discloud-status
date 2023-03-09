@@ -74,6 +74,7 @@ class PlanType(enum.Enum):
     Diamond = 4
     Krypton = 5
     Sapphire = 6
+    Safira = 6  # Translation
     Ruby = 7
 
 
@@ -105,7 +106,8 @@ class Logs:
 # Internal Objects
 class Plan:
     def __init__(self, data: UserData) -> None:
-        self.type: PlanType = PlanType[data["plan"]]
+        plan_type: PlanType = PlanType[data["plan"]]
+        self.type: PlanType = plan_type
         end_date = data.get("planDataEnd")
         self.lifetime: bool = end_date == "Lifetime"
         self.language = data["locale"]
@@ -137,6 +139,7 @@ AppMod = ApplicationModerator
 
 class User:
     def __init__(self, client: Client, data: UserData) -> None:
+        self._client = client
         self.id: int = int(data["userID"])
         self.total_ram: int = data["totalRamMb"]
         self.using_ram: int = data["ramUsedMb"]
