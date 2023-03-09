@@ -13,8 +13,6 @@ pip install git+https://github.com/discloud/python-discloud-status@master
 First of all, you need to get your Discloud API-Token. You can create a new one by typing `.api` in the [Discloud Server](https://discord.gg/discloud).
 If you're in trouble on getting your Discloud API-Token, you can DM the Ticket bot (DisCloud ModMail#6424) in the server. The supporters will be glad on helping you
 
-Note: currently this uses the new API version which is available for few users.
-
 ### Understanding the returns
 #### Action
 All methods that doesn't get information(e.g. start app/change ram/add mod) returns an `Action`. It has `.status` attribute, which is either "ok" when no issues happened, or "error" when something happened. It also contains `.message` attribute which is always returned when an error ocurrs, and is given on almost all actions.
