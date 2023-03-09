@@ -44,6 +44,8 @@ class UserData(TypedDict):
     lastDataLeft: Dict[str, int]
     planDataEnd: str
     locale: str
+    subdomains: Optional[List[str]]
+    customdomains: Optional[List[str]]
 
 
 class ResponsePayload(RawResponseData):
@@ -74,7 +76,7 @@ class LogsPayload(RawResponseData):
 
 
 class ModsPayload(RawResponseData):
-    team: List[ModData]
+    team: Union[List[ModData], ModData]
 
 
 class UserPayload(RawResponseData):
