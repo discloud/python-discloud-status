@@ -109,17 +109,21 @@ class Plan:
         plan_type: PlanType = PlanType[data["plan"]]
         self.type: PlanType = plan_type
         end_date = data.get("planDataEnd")
-        self.lifetime: bool = end_date == "Lifetime"
         self.language = data["locale"]
         is_pt = self.language == "pt-BR"
-        self.expire_date = (
-            None if self.lifetime or not end_date else Date.from_string(end_date)
-        )
-        self.expires_in = (
-            t("never", is_pt)
-            if not self.expire_date
-            else TimePeriod.until_date(self.language, self.expire_date)
-        )
+        self.lifetime: bool = end_date == "Lifetime"
+        if end_date != "Subscription":
+            self.expire_date = (
+                None if self.lifetime or not end_date else Date.from_string(end_date)
+            )
+            self.expires_in = (
+                t("never", is_pt)
+                if not self.expire_date
+                else TimePeriod.until_date(self.language, self.expire_date)
+            )
+        else:
+            self.expire_date = t(end_date, is_pt)
+            self.expires_in = t(end_date, is_pt)
 
     def __str__(self) -> str:
         return t(self.type.name, self.language == "pt-BR")
