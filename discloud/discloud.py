@@ -63,7 +63,12 @@ class File:
     def __init__(self, fp: str | io.BufferedReader) -> None:
         if isinstance(fp, str) and not fp.endswith(".zip"):
             raise ValueError("File must be .zip")  # todo: add custom error translations
-        self.bytes = open(fp, "rb") if isinstance(fp, str) else fp
+        self.bytes = fp
+        self.filename = "file"
+        if isinstance(fp, str):
+            self.bytes = open(fp, "rb")
+            self.filename = fp
+         
 
 
 class PlanType(enum.Enum):
