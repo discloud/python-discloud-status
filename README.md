@@ -10,7 +10,7 @@ pip install git+https://github.com/discloud/python-discloud-status@master
 
 ## Usage
 ### Get Started
-First of all, you need to get your Discloud API-Token. You can create a new one by typing `.api` in the [Discloud Server](https://discord.gg/discloud).
+First of all, you need to get your Discloud API-Token. You can create a new one by typing `.api` in the [Discloud Server](https://discord.discloudbot.com).
 If you're in trouble on getting your Discloud API-Token, you can DM the Ticket bot (DisCloud ModMail#6424) in the server. The supporters will be glad on helping you
 
 ### Understanding the returns
