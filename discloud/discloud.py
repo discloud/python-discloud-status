@@ -14,6 +14,7 @@ class ActionType(enum.Enum):
     set_locale = LocaleUpdatePayload
     upload = RawResponseData
     userinfo = UserPayload
+    appinfo = AppsPayload
     status = AppsPayload
     logs = LogsPayload
     start = RawResponseData
@@ -173,11 +174,31 @@ class PartialApplication(BaseApplication):
     #    bot = await self._client.app_info(self.id)
     #    return bot
 
+class ApplicationInfo(PartialApplication):
+    __slots__ = (
+        "id", "avatarURL", "name", "type", "online", "ramKilled",
+        "mainFile", "lang", "mods", "autoDeployGit", "autoRestart"
+    )
+
+    def __init__(self, client: Client, data: AppInfo) -> None:
+        self.id: str = data["id"]
+        self.avatarURL: str = data["avatarURL"]
+        self.name: str = data["name"]
+        self.type: int = data["type"]
+        self.online: bool = data["online"]
+        self.ramKilled: bool = data["ramKilled"]
+        self.mainFile: str = data["mainFile"]
+        self.lang: str = data["lang"]
+        self.mods: Dict = data["mods"]
+        self.autoDeployGit: str = data["autoDeployGit"]
+        self.autoRestart: bool = data["autoRestart"]
+
+        super().__init__(client, self.id)
 
 class Application(PartialApplication):
     __slots__ = ("id", "status", "cpu", "memory", "start_date", "online_since")
 
-    def __init__(self, client: Client, data: AppData) -> None:
+    def __init__(self, client: Client, data: AppStatus) -> None:
         self.status: str = data["container"]
         self.cpu: str = data["cpu"]
         self.memory: MemoryInfo = MemoryInfo(data["memory"])
