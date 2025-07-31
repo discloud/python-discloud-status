@@ -26,6 +26,7 @@ class Route:
         2: {
             "SET_LOCALE": {"METHOD": "PUT", "PATH": "/locale/{locale}"},
             "GET_USER_INFO": {"METHOD": "GET", "PATH": "/user"},
+            "GET_APP_INFO": {"METHOD": "GET", "PATH": "/app/{app_id}"},
             "UPLOAD": {"METHOD": "POST", "PATH": "/upload"},
             "GET_STATUS": {"METHOD": "GET", "PATH": "/app/{target}/status"},
             "GET_LOGS": {"METHOD": "GET", "PATH": "/app/{target}/logs"},
@@ -133,8 +134,14 @@ class RequestManager:
         result = await self.request(route)
         response = Response("delete", result)
         return response
-
+    
     async def fetch_app(self, target: str) -> Response:
+        route = Route(self.version, "GET_APP_INFO", app_id=target)
+        result = await self.request(route)
+        response = Response("status", result)
+        return response
+
+    async def fetch_app_status(self, target: str) -> Response:
         route = Route(self.version, "GET_STATUS", target=target)
         result = await self.request(route)
         response = Response("status", result)
