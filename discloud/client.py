@@ -1,7 +1,7 @@
 from .http import RequestManager
 from .utils import check_perms, MISSING, mod_perms
 from .errors import InvalidArgument
-from .discloud import Action, Application, AppMod, Backup, File, Logs, Response, User
+from .discloud import Action, Application, ApplicationInfo, AppMod, Backup, File, Logs, Response, User
 from .discloud_typing import *
 
 from typing import List, Literal, overload
@@ -38,19 +38,37 @@ class Client:
         data: UserPayload = response.data
         user_data: UserData = data["user"]
         return User(self, user_data)
-
+    
     @overload
-    async def app_info(self, target: str) -> Application:
+    async def app_info(self, target:str, fa) -> ApplicationInfo:
         ...
 
     @overload
-    async def app_info(self, target: Literal["all"]) -> List[Application]:
+    async def app_info(self, target: Literal["all"]) -> List[ApplicationInfo]:
         ...
 
     async def app_info(
         self, target: str | Literal["all"]
-    ) -> Application | List[Application]:
+    ) -> ApplicationInfo | List[ApplicationInfo]:
         response: Response = await self.http.fetch_app(target)
+        data: AppsPayload = response.data
+        apps = data["apps"]
+        if isinstance(apps, list):
+            return [ApplicationInfo(self, app_data) for app_data in apps]
+        return ApplicationInfo(self, apps)
+
+    @overload
+    async def app_status(self, target: str) -> Application:
+        ...
+
+    @overload
+    async def app_status(self, target: Literal["all"]) -> List[Application]:
+        ...
+
+    async def app_status(
+        self, target: str | Literal["all"]
+    ) -> Application | List[Application]:
+        response: Response = await self.http.fetch_app_status(target)
         data: AppsPayload = response.data
         apps = data["apps"]
         if isinstance(apps, list):
