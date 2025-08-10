@@ -51,6 +51,19 @@ print(f"Locale '{user.locale}'")
 ```python
 bot = await client.app_info(target="APP_ID")
 print(f"ID '{bot.id}'")
+print(f"Avatar '{bot.avatarURL}'")
+print(f"Name '{bot.name}'")
+print(f"Online '{bot.online}'")
+print(f"Main file '{bot.mainFile}'")
+print(f"Language '{bot.lang}'")
+print(f"Auto deploy '{bot.autoDeployGit}'")
+print(f"Auto restart '{bot.autoRestart}'")
+```
+
+#### Status
+```python
+bot = await client.app_status(target="APP_ID")
+print(f"ID '{bot.id}'")
 print(f"Status '{bot.status}'")
 print(f"CPU '{bot.cpu}'")
 print(f"Memory '{bot.memory}'")

@@ -8,8 +8,20 @@ class RawResponseData(TypedDict):
     status: Literal["ok", "error"]
     statusCode: Optional[int]
 
+class AppInfo(TypedDict):
+    id: str
+    avatarURL: str
+    name: str
+    type: int
+    online: bool
+    ram_killed: bool
+    main_file: str
+    lang: str
+    mods: List[any]
+    autoDeployGit: str
+    autoRestart: bool
 
-class AppData(TypedDict):
+class AppStatus(TypedDict):
     id: str
     container: str
     cpu: str
@@ -51,12 +63,12 @@ class UserData(TypedDict):
 class ResponsePayload(RawResponseData):
     user: Optional[UserData]
     apps: Optional[
-        Union[Union[List[AppData], AppData], Union[List[LogsData], LogsData]]
+        Union[Union[List[AppStatus], AppStatus], Union[List[LogsData], LogsData]]
     ]
 
 
 class AppsPayload(RawResponseData):
-    apps: Union[List[AppData], AppData]
+    apps: Union[List[AppStatus], AppStatus]
 
 
 class AppModPayload(RawResponseData):
